@@ -1,0 +1,21 @@
+{
+  "name": "mingodb",
+  "version": "0.0.1",
+  "description": "MongoDb client based db",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsup",
+    "test:dev": "cd test && yarn dev"
+  },
+  "devDependencies": {
+    "@types/ramda": "^0.29.10",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "bson-objectid": "^2.0.4",
+    "mingo": "^6.4.10",
+    "ramda": "^0.29.1"
+  }
+}
