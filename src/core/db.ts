@@ -1,7 +1,6 @@
 import ObjectID from "bson-objectid";
 import { Query } from "mingo";
 import { Hook, HookFn } from '../plugins'
-import { compose } from "ramda";
 
 type Type = 'string' | 'number' | 'date' | 'id' | 'object' | 'array' | 'boolean';
 
