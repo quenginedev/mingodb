@@ -93,6 +93,6 @@ Make sure your features are well-covered!
 
 ## Get Involved! 🌍
 
-If you’re interested in using, improving, or just playing around with MingoDb, feel free to get involved. Check out the [issues tab](https://chatgpt.com/c/c68217e9-af26-4efa-9bc5-3429c39c1244#) for things to start working on. Remember, no contribution is too small and every contribution is valued.
+If you’re interested in using, improving, or just playing around with MingoDb, feel free to get involved. Check out the [issues tab](https://github.com/quenginedev/mingodb/issues) for things to start working on. Remember, no contribution is too small and every contribution is valued.
 
 ## Happy coding, and remember: Have fun with it! 😄
