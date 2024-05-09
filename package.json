@@ -1,21 +1,25 @@
 {
   "name": "mingodb",
-  "version": "0.0.1",
-  "description": "MongoDb client based db",
-  "main": "index.js",
-  "license": "MIT",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./lib/index.js",
   "scripts": {
-    "build": "tsup",
-    "test:dev": "cd test && yarn dev"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "spec": "nodemon --exec ts-node test/spec.ts"
   },
-  "devDependencies": {
-    "@types/ramda": "^0.29.10",
-    "tsup": "^8.0.1",
-    "typescript": "^5.3.3"
-  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "bson-objectid": "^2.0.4",
-    "mingo": "^6.4.10",
-    "ramda": "^0.29.1"
+    "mingo": "^6.4.12",
+    "typescript": "^5.3.3"
+  },
+  "devDependencies": {
+    "@types/mongoose": "^5.11.97",
+    "@types/ramda": "^0.29.12",
+    "nodemon": "^3.1.0",
+    "ts-node": "^10.9.2",
+    "tsup": "^8.0.2"
   }
 }
