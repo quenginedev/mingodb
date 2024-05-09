@@ -28,11 +28,29 @@ Here’s how you can create a new database and start interacting with it:
 
 ### Example:
 
-javascript
+```ts 
+/// Initialize your database
+const db = new MingoDb("my-session-id");
 
-Copy code
+// Create a collection
+const users = db.collection("users");
 
-`// Initialize your database const db = new MingoDb("my-session-id");  // Create a collection const users = db.collection("users");  // Insert a new user const newUser = await users.insert({   name: "Alice",   age: 25,   hobbies: ["reading", "gaming"] });  // Find a user const foundUser = await users.find({ name: "Alice" });  // Update a user await users.update({ name: "Alice" }, { $set: { age: 26 } });  // Remove a user await users.remove({ name: "Alice" });`
+// Insert a new user
+const newUser = await users.insert({
+  name: "Alice",
+  age: 25,
+  hobbies: ["reading", "gaming"]
+});
+
+// Find a user
+const foundUser = await users.find({ name: "Alice" });
+
+// Update a user
+await users.update({ name: "Alice" }, { $set: { age: 26 } });
+
+// Remove a user
+await users.remove({ name: "Alice" });
+```
 
 ## Listening to Changes 🔍
 
@@ -40,11 +58,16 @@ Set up listeners to react to changes in your collections. Useful for debugging o
 
 ### Example:
 
-javascript
-
-Copy code
-
-``users.onChange({   query: {},   callback: (docs, type) => {     console.log(`${type} operation performed`, docs);   },   changeType: ["insert", "update", "remove"],   immediate: true });``
+```ts
+users.onChange({
+  query: {},
+  callback: (docs, type) => {
+    console.log(`${type} operation performed`, docs);
+  },
+  changeType: ["insert", "update", "remove"],
+  immediate: true
+});
+```
 
 ## Contributing to MingoDb 💻
 
@@ -62,11 +85,9 @@ To ensure that your contributions and updates do not break any existing function
 
 ### How to Run Tests
 
-bash
-
-Copy code
-
+```bash
 `npm run test`
+```
 
 Make sure your features are well-covered!
 
