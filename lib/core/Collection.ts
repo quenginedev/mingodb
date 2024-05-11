@@ -27,7 +27,7 @@ export default class Collection<T> {
     this.plugins = options.plugins;
   }
 
-  notifySubscribers(docs: Doc<T>[], type: ChangeType) {
+  private notifySubscribers(docs: Doc<T>[], type: ChangeType) {
     for (const { query, changeType, callback } of this.subscribers.values()) {
       if (
         (Array.isArray(changeType) && changeType.includes(type)) ||
