@@ -16,7 +16,7 @@ export default abstract class Adaptor {
     collection: string,
     query: FilterQuery<T>,
     data: UpdateQuery<T>
-  ): Promise<Doc<T>>;
+  ): Promise<Doc<T>[]>;
 
   abstract remove<T>(
     collection: string,

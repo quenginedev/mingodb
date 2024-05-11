@@ -5,10 +5,11 @@ type Task = {
   description: string;
   completed: boolean;
   createdAt: Date;
-}
+};
 
 (async () => {
   const randomUserId = () => Math.random().toString(36).substr(2, 9);
+
   const accountDb = new MingoDb(`test-${randomUserId()}`);
   const tasks = accountDb.collection<Task>("tasks");
 
@@ -22,11 +23,11 @@ type Task = {
   tasks.$({
     query: {},
     callback: (docs, type) => {
-      console.log('listener', docs, type);
+      console.log("listener", docs, type);
     },
     changeType: ["insert", "update", "remove"], // This will listen to all changes
-    immediate: true // This will trigger the callback immediately
-  })
+    immediate: true, // This will trigger the callback immediately
+  });
 
   await tasks.insert({
     name: "Task 2",
@@ -35,7 +36,7 @@ type Task = {
     createdAt: new Date(),
   });
 
-  await tasks.update({ name: "Task 1" }, { $set: { completed: true } });
+  await tasks.update({ name: "Task 1" }, { completed: true });
 
   await tasks.remove({ _id: task._id });
 

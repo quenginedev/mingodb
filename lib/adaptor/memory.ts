@@ -21,17 +21,19 @@ export class MemoryAdaptor extends Adaptor {
     collection: string,
     query: FilterQuery<T>,
     data: UpdateQuery<T>
-  ): Promise<Doc<T>> {
+  ): Promise<Doc<T>[]> {
     if (!this.records.has(collection)) this.createNewCollection(collection);
     const collectionRecords = this.records.get(collection);
     const docs = Array.from(collectionRecords?.values() || []);
     const mingoQuery = new Query(query);
     const updatedDocs = docs.filter((doc) => mingoQuery.test(doc));
     
-
     updatedDocs.forEach((doc) => {
-      console.log(doc, data);
-      updateObject(doc, data as UpdateExpression);
+      try {
+        updateObject(doc, data as UpdateExpression);
+      } catch (error) {
+        doc = { ...doc, ...data };
+      }
       collectionRecords?.set(doc._id, doc);
     });
 

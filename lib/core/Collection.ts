@@ -44,63 +44,78 @@ export default class Collection<T> {
 
   async insert(data: T) {
     const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeInsert);
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onInsert);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.inserted);
 
-    for (const hook of beforePluginHooks) [data] = await hook([data]);
-    data = await this.adaptor.insert<T>(this.name, data);
-    for (const hook of afterPluginHooks) [data] = await hook([data]);
-    this.notifySubscribers([data as Doc<T>], "insert");
-    return data as Doc<T>;
+    let payload = { data: [data] };
+    for (const hook of beforePluginHooks) payload = await hook(payload);
+    payload.data[0] = await this.adaptor.insert<T>(this.name, payload.data[0]);
+    for (const hook of afterPluginHooks) payload = await hook(payload);
+    this.notifySubscribers([payload.data[0] as Doc<T>], "insert");
+    return payload.data[0] as Doc<T>;
   }
 
   async insertMany(data: T[]) {
     const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeInsert,);
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onInsert);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.inserted);
 
-    for (const hook of beforePluginHooks) data = await hook(data);
-
+    let payload = { data };
+    for (const hook of beforePluginHooks) payload = await hook(payload);
     let response = [];
-    for (let item of data) {
+    for (let item of payload.data) {
       item = await this.adaptor.insert<T>(this.name, item);
       response.push(item);
     }
-
-    for (const hook of afterPluginHooks) response = await hook(response);
-    this.notifySubscribers(response as Doc<T>[], "insert");
-    return response;
+    for (const hook of afterPluginHooks) payload = await hook({data: response });
+    this.notifySubscribers(payload.data as Doc<T>[], "insert");
+    return payload.data;
   }
 
-  async update(query: any, data: any) {
+  async update(query: any, update: any) {
     const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeUpdate);
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onUpdate);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.updated);
 
-    for (const hook of beforePluginHooks) data = await hook(data);
-    data = await this.adaptor.update<T>(this.name, query, data);
-    for (const hook of afterPluginHooks) data = await hook(data);
-    this.notifySubscribers(data as Doc<T>[], "update");
-    return data;
+    let beforeUpdatePayload = { query, update };
+    for (const hook of beforePluginHooks) beforeUpdatePayload = await hook(beforeUpdatePayload);
+    const updatedDocs = await this.adaptor.update<T>(this.name, beforeUpdatePayload.query, beforeUpdatePayload.update);
+    let updatedPayload = { query, update, data: updatedDocs };
+    for (const hook of afterPluginHooks) updatedPayload = await hook(updatedPayload) as { query: any; update: any; data: Doc<T>[] };
+    this.notifySubscribers(updatedDocs as Doc<T>[], "update");
+    return updatedDocs as Doc<T>[];
   }
 
   async remove(query: any) {
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onRemove);
-    let data = await this.adaptor.remove<T>(this.name, query);
-    for (const hook of afterPluginHooks) data = (await hook(data)) as Doc<T>[];
-    this.notifySubscribers(data as Doc<T>[], "remove");
-    return data;
+    const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeRemove);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.removed);
+
+    let payload = { query };
+    for (const hook of beforePluginHooks) payload = await hook(payload);
+    const data = await this.adaptor.remove<T>(this.name, payload.query);
+    let removedPayload = { query, data };
+    for (const hook of afterPluginHooks) removedPayload = await hook(removedPayload) as { query: any; data: Doc<T>[] };
+    this.notifySubscribers(removedPayload.data as Doc<T>[], "remove");
+    return removedPayload.data as Doc<T>[];
   }
 
   async find(query: any) {
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onFind);
-    let data = await this.adaptor.find<T>(this.name, query);
-    for (const hook of afterPluginHooks) data = (await hook(data)) as Doc<T>[];
-    return data;
+    const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeFind);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.found);
+    let payload = { query };
+    for (const hook of beforePluginHooks) payload = await hook(payload);
+    let data = await this.adaptor.find<T>(this.name, payload.query);
+    let foundPayload = { query, data };
+    for (const hook of afterPluginHooks) foundPayload = await hook(foundPayload) as { query: any; data: Doc<T>[] };
+    return foundPayload.data as Doc<T>[];
   }
 
   async findOne(query: any) {
-    const afterPluginHooks = this.plugins.map((plugin) => plugin.onFindOne);
-    let data = await this.adaptor.findOne<T>(this.name, query);
-    for (const hook of afterPluginHooks) data = (await hook(data)) as Doc<T>;
-    return data;
+    const beforePluginHooks = this.plugins.map((plugin) => plugin.beforeFindOne);
+    const afterPluginHooks = this.plugins.map((plugin) => plugin.foundOne);
+    let payload = { query };
+    for (const hook of beforePluginHooks) payload = await hook(payload);
+    let data = await this.adaptor.findOne<T>(this.name, payload.query);
+    let foundPayload = { query, data };
+    for (const hook of afterPluginHooks) foundPayload = await hook(foundPayload) as { query: any; data: Doc<T> | null };
+    return foundPayload.data as Doc<T> | null;
   }
 
   async aggregate(pipeline: any[]) {

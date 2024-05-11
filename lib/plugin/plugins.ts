@@ -1,37 +1,64 @@
-export default abstract class Plugin<T, R extends T = T> {
-  onInsert(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+import { FilterQuery, UpdateQuery } from "mongoose";
+import { F } from "ramda";
+
+type MaybePromise<T> = T | Promise<T>;
+
+export default abstract class Plugin<
+  T,
+  D extends T = T,
+  F extends FilterQuery<T> = FilterQuery<T>,
+  U extends UpdateQuery<T> = UpdateQuery<T>
+> {
+  beforeInsert(options: { data: D[] }): MaybePromise<{ data: D[] }> {
+    return options;
   }
 
-  onUpdate(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+  inserted(options: { data: D[] }): MaybePromise<{ data: D[] }> {
+    return options;
   }
 
-  onRemove(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+  beforeUpdate(options: { query: F; update: U }): MaybePromise<{
+    query: F;
+    update: U;
+  }> {
+    return options;
   }
 
-  onFind(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+  updated(options: { query: F; update: U; data: D[] }): MaybePromise<{
+    query: F;
+    update: U;
+    data: D[];
+  }> {
+    return options;
   }
-  
-  onFindOne(data: T | null): R | null | Promise<R | null> {
-    return data as R | null;
+
+  beforeRemove(options: { query: F }): MaybePromise<{ query: F }> {
+    return options;
   }
-  
-  beforeInsert(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+
+  removed(options: {
+    query: F;
+    data: D[];
+  }): MaybePromise<{ query: F; data: D[] }> {
+    return options;
   }
-  
-  beforeUpdate(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+
+  beforeFind(options: { query: F }): MaybePromise<{ query: F }> {
+    return options;
   }
-  
-  beforeFind(data: T[]): R[] | Promise<R[]> {
-    return data as R[];
+
+  found(options: { query: F; data: D[] }): MaybePromise<{ query: F; data: D[] }> {
+    return options;
   }
-  
-  beforeFindOne(data: T | null): R | null | Promise<R | null> {
-    return data as R | null
+
+  beforeFindOne(options: { query: F }): MaybePromise<{ query: F }> {
+    return options;
+  }
+
+  foundOne(options: { query: F; data: D | null }): MaybePromise<{
+    query: F;
+    data: D | null;
+  }> {
+    return options;
   }
 }
