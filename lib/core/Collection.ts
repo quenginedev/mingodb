@@ -1,7 +1,7 @@
 import Adaptor, { Doc } from "../adaptor";
-import Plugin from "../plugin/plugins";
-import { FilterQuery } from "mongoose";
+import Plugin from "../plugin";
 import { Query } from "mingo";
+import { Query as Q } from '../types'
 
 interface CollectionOptions {
   adapter: Adaptor;
@@ -16,7 +16,7 @@ export default class Collection<T> {
   private subscribers = new Map<
     string,
     {
-      query: FilterQuery<any>;
+      query: Q<any>;
       callback: (docs: any[], changeType: ChangeType) => void;
       changeType: ChangeType;
     }
@@ -124,7 +124,7 @@ export default class Collection<T> {
   }
 
   $<T>(options: {
-    query: FilterQuery<T>;
+    query: Q<T>;
     callback: (docs: Doc<T>[], changeType: ChangeType) => void;
     changeType?: ChangeType;
     immediate?: boolean;

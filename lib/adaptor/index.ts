@@ -1,5 +1,6 @@
 import ObjectID from "bson-objectid";
 import type { FilterQuery, UpdateQuery, PipelineStage } from "mongoose";
+import abstract from './../plugin/index';
 
 export type Doc<T> = T & { _id: string };
 
@@ -38,4 +39,5 @@ export default abstract class Adaptor {
     pipeline: PipelineStage[]
   ): Promise<Doc<T>[]>;
 
+  abstract sync(): Promise<void>;
 }

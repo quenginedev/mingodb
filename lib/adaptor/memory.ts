@@ -20,7 +20,7 @@ export class MemoryAdaptor extends Adaptor {
   update<T>(
     collection: string,
     query: FilterQuery<T>,
-    data: UpdateQuery<T>
+    update: UpdateQuery<T>
   ): Promise<Doc<T>[]> {
     if (!this.records.has(collection)) this.createNewCollection(collection);
     const collectionRecords = this.records.get(collection);
@@ -29,11 +29,10 @@ export class MemoryAdaptor extends Adaptor {
     const updatedDocs = docs.filter((doc) => mingoQuery.test(doc));
     
     updatedDocs.forEach((doc) => {
-      try {
-        updateObject(doc, data as UpdateExpression);
-      } catch (error) {
-        doc = { ...doc, ...data };
-      }
+      Object.entries(update).forEach(([key, value]) => {
+        const updater = { [key]: value }
+        updateObject(doc, updater as UpdateExpression);
+      })
       collectionRecords?.set(doc._id, doc);
     });
 
@@ -42,7 +41,7 @@ export class MemoryAdaptor extends Adaptor {
 
   remove<T>(collection: string, query: FilterQuery<T>): Promise<Doc<T>[]> {
     const records = this.records.get(collection);
-    if (!records) return Promise.reject(new Error("Collection not found"));
+    if (!records) return Promise.resolve([]);
     const docs = Array.from(records.values()) as Doc<T>[];
     const mingoQuery = new Query(query);
     const removedDocs = docs.filter((doc) => mingoQuery.test(doc));
@@ -52,7 +51,7 @@ export class MemoryAdaptor extends Adaptor {
 
   find<T>(collection: string, query: FilterQuery<T>): Promise<Doc<T>[]> {
     const records = this.records.get(collection);
-    if (!records) return Promise.reject(new Error("Collection not found"));
+    if (!records) return Promise.resolve([]);
     const docs = Array.from(records.values()) as Doc<T>[];
     const mingoQuery = new Query(query);
     return Promise.resolve(docs.filter((doc) => mingoQuery.test(doc)));
@@ -63,7 +62,7 @@ export class MemoryAdaptor extends Adaptor {
     query: FilterQuery<T>
   ): Promise<Doc<T> | null> {
     const records = this.records.get(collection);
-    if (!records) return Promise.reject(new Error("Collection not found"));
+    if (!records) return Promise.resolve(null);
     const docs = Array.from(records.values()) as Doc<T>[];
     const mingoQuery = new Query(query);
     return Promise.resolve(docs.find((doc) => mingoQuery.test(doc)) || null);
@@ -74,9 +73,13 @@ export class MemoryAdaptor extends Adaptor {
     pipeline: PipelineStage[]
   ): Promise<Doc<T>[]> {
     const records = this.records.get(collection);
-    if (!records) return Promise.reject(new Error("Collection not found"));
+    if (!records) return Promise.resolve([]);
     const docs = Array.from(records.values()) as Doc<T>[];
     const aggregation = aggregate(docs, pipeline as unknown as any) as Doc<T>[];
     return Promise.resolve(aggregation);
+  }
+
+  async sync() {
+    return;
   }
 }

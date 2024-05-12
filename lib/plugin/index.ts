@@ -1,13 +1,11 @@
-import { FilterQuery, UpdateQuery } from "mongoose";
-import { F } from "ramda";
+import { MaybePromise, Query, Update } from "../types";
 
-type MaybePromise<T> = T | Promise<T>;
 
 export default abstract class Plugin<
   T,
   D extends T = T,
-  F extends FilterQuery<T> = FilterQuery<T>,
-  U extends UpdateQuery<T> = UpdateQuery<T>
+  F extends Query<T> = Query<T>,
+  U extends Update<T> = Update<T>
 > {
   beforeInsert(options: { data: D[] }): MaybePromise<{ data: D[] }> {
     return options;
