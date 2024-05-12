@@ -2,7 +2,7 @@ import ObjectID from "bson-objectid";
 import type { FilterQuery, UpdateQuery, PipelineStage } from "mongoose";
 import abstract from './../plugin/index';
 
-export type Doc<T> = T & { _id: string };
+export type Doc<T> = T & { _id: string, [key: string]: any };
 
 export default abstract class Adaptor {
   private key: string = "_id";
