@@ -143,4 +143,8 @@ export default class Collection<T> {
         .then((docs) => callback(docs, changeType));
     return () => this.subscribers.delete(subscriptionId);
   }
+
+  onChange<T>(query: Q<T>, callback: (docs: Doc<T>[], changeType: ChangeType) => void) {
+    return this.$({ query, callback });
+  }
 }
